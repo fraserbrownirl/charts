@@ -30,7 +30,6 @@ const parseCSVData = (csvText: string): {
     const contributionToCause = parseFloat(values[3]);
     const poolSize = parseFloat(values[4]);
     const binomialProbability = parseFloat(values[5]);
-    const profitability = values[6] ? parseFloat(values[6]) : undefined;
     
     mintingData.push({
       n,
@@ -39,14 +38,14 @@ const parseCSVData = (csvText: string): {
       contributionToCause,
       poolSize,
       binomialProbability,
-      profitability
+      profitability: undefined
     });
     
-    // Parse investor profit data (columns G-AA, which are indices 7-27)
-    // Column G = investor entering at n=151, H = n=152, etc.
+    // Parse investor profit data (columns G-AA, which are indices 6-26)
+    // Column G (index 6) = investor entering at n=151, H = n=152, etc.
     // Each row shows profit for all active investors at that mint number
     const investorProfits: number[] = [];
-    for (let j = 7; j < values.length; j++) {
+    for (let j = 6; j < values.length; j++) {
       const val = parseFloat(values[j]);
       if (!isNaN(val)) {
         investorProfits.push(val);
