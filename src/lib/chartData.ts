@@ -9,6 +9,9 @@ export interface MintData {
   profitability?: number;
 }
 
+// Import real parsed data
+import { realMintingData as importedRealData } from "./realDataParser";
+
 // Full dataset will be loaded from the fetched spreadsheet
 // For optimal visualization, we sample every Nth row for large datasets
 export const generateSampledData = (allData: MintData[], maxPoints: number = 200): MintData[] => {
@@ -29,42 +32,8 @@ export const generateSampledData = (allData: MintData[], maxPoints: number = 200
   return sampled;
 };
 
-// Generate all 999 rows programmatically based on the pattern
-export const generateFullDataset = (): MintData[] => {
-  const data: MintData[] = [];
-  
-  // Initial values from the spreadsheet
-  let mintPrice = 0.0025;
-  let contributionToPool = 0.002;
-  let contributionToCause = 0.0005;
-  let poolSize = 0.002;
-  
-  for (let n = 1; n <= 999; n++) {
-    // Calculate binomial probability (approximation)
-    const p = 0.00390625 * Math.pow(2, (n - 1) / 256);
-    const binomialProbability = Math.min(p, 1);
-    
-    data.push({
-      n,
-      mintPrice: parseFloat(mintPrice.toFixed(12)),
-      contributionToPool: parseFloat(contributionToPool.toFixed(6)),
-      contributionToCause: parseFloat(contributionToCause.toFixed(6)),
-      poolSize: parseFloat(poolSize.toFixed(6)),
-      binomialProbability: parseFloat(binomialProbability.toFixed(10))
-    });
-    
-    // Update values for next iteration (based on observed patterns)
-    mintPrice *= 1.0002249;
-    contributionToPool *= 1.0010006;
-    contributionToCause *= 1.001;
-    poolSize += contributionToPool;
-  }
-  
-  return data;
-};
-
-// Generate the full dataset
-const fullDataset = generateFullDataset();
+// Use the real dataset from the parser
+const fullDataset = importedRealData;
 
 // Export sampled version for charts (every 5th row for better performance)
 export const mintingData: MintData[] = generateSampledData(fullDataset, 200);
