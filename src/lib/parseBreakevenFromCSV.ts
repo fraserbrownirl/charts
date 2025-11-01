@@ -13,7 +13,7 @@ export interface InvestorProfitLine {
 // 21 investors total entering at n=10, 30, 50, ..., 410
 export const parseInvestorProfitLines = (breakevenData: BreakevenEntry[]): InvestorProfitLine[] => {
   const investorLines: InvestorProfitLine[] = [];
-  const FIRST_INVESTOR_N = 10; // First investor enters at n=10
+  const FIRST_INVESTOR_N = 10; // First investor enters at n=10  
   const INVESTOR_ENTRY_INTERVAL = 20; // New investor every 20 mints
   const NUM_INVESTORS = 21; // Columns G through AA = 21 columns
   
@@ -28,11 +28,11 @@ export const parseInvestorProfitLines = (breakevenData: BreakevenEntry[]): Inves
       
       // Only include data points after this investor entered
       if (currentN >= entryN) {
-        // The investor's profit is at their column index in the array
+        // The investor's profit is at their fixed column index
         const profit = entry.breakevenPoolSizes[investorIndex];
         
-        // Add the data point if the profit value exists
-        if (profit !== undefined && !isNaN(profit)) {
+        // Add the data point if the profit value exists and is not null
+        if (profit !== null && profit !== undefined && !isNaN(profit)) {
           profitData.push({
             n: currentN,
             profit: profit

@@ -41,23 +41,31 @@ const parseCSVData = (csvText: string): {
       profitability: undefined
     });
     
-    // Parse investor profit data starting from column 7 (index 6)
-    // Each subsequent column represents profit for investors who have entered
-    const investorProfits: number[] = [];
-    for (let j = 6; j < values.length; j++) {
-      const val = values[j].trim();
-      if (val !== '') {
-        const parsedVal = parseFloat(val);
+    // Parse investor profit data from columns G-AA (indices 6-26)
+    // Column positions are FIXED: G=investor0, H=investor1, I=investor2, etc.
+    // Empty cells before an investor enters should remain as null/undefined
+    const investorProfits: (number | null)[] = [];
+    const MAX_INVESTOR_COLUMNS = 21; // G through AA = 21 columns
+    
+    for (let j = 0; j < MAX_INVESTOR_COLUMNS; j++) {
+      const columnIndex = 6 + j; // Start from column G (index 6)
+      if (columnIndex < values.length && values[columnIndex].trim() !== '') {
+        const parsedVal = parseFloat(values[columnIndex]);
         if (!isNaN(parsedVal)) {
-          investorProfits.push(parsedVal);
+          investorProfits[j] = parsedVal;
+        } else {
+          investorProfits[j] = null;
         }
+      } else {
+        investorProfits[j] = null;
       }
     }
     
-    if (investorProfits.length > 0) {
+    // Only add if at least one investor value exists
+    if (investorProfits.some(v => v !== null)) {
       breakevenData.push({
         entryN: n,
-        breakevenPoolSizes: investorProfits
+        breakevenPoolSizes: investorProfits as number[] // Cast after filtering nulls in usage
       });
     }
   }
