@@ -1,8 +1,40 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from "recharts";
-import { investorProfitLines } from "@/lib/parseBreakevenFromCSV";
+import { getInvestorProfitLines, type InvestorProfitLine } from "@/lib/parseBreakevenFromCSV";
 
 const BreakevenChart = () => {
+  const [investorProfitLines, setInvestorProfitLines] = useState<InvestorProfitLine[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getInvestorProfitLines().then(lines => {
+      setInvestorProfitLines(lines);
+      setIsLoading(false);
+    });
+  }, []);
+
+  if (isLoading || investorProfitLines.length === 0) {
+    return (
+      <Card className="shadow-glow border-border/50">
+        <CardHeader>
+          <CardTitle className="text-2xl">Investor Profit/Loss Analysis</CardTitle>
+          <CardDescription>
+            21 investor scenarios (n=151 to n=171) showing profit declining to breakeven and beyond
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-[500px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading investor data...</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Create a combined dataset with all investor profit lines
   // Each investor's data needs to be merged into rows by N value
   const allNValues = new Set<number>();
