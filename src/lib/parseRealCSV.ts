@@ -41,14 +41,16 @@ const parseCSVData = (csvText: string): {
       profitability: undefined
     });
     
-    // Parse investor profit data (columns G-AA, which are indices 6-26)
-    // Column G (index 6) = investor entering at n=151, H = n=152, etc.
-    // Each row shows profit for all active investors at that mint number
+    // Parse investor profit data starting from column 7 (index 6)
+    // Each subsequent column represents profit for investors who have entered
     const investorProfits: number[] = [];
     for (let j = 6; j < values.length; j++) {
-      const val = parseFloat(values[j]);
-      if (!isNaN(val)) {
-        investorProfits.push(val);
+      const val = values[j].trim();
+      if (val !== '') {
+        const parsedVal = parseFloat(val);
+        if (!isNaN(parsedVal)) {
+          investorProfits.push(parsedVal);
+        }
       }
     }
     

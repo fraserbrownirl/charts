@@ -17,22 +17,21 @@ export const parseInvestorProfitLines = (breakevenData: BreakevenEntry[]): Inves
   const INVESTOR_ENTRY_INTERVAL = 20; // New investor every 20 mints
   const NUM_INVESTORS = 21; // Columns G through AA = 21 columns
   
-  // Build a map of n -> investor profits array
-  const profitsByN = new Map<number, number[]>();
-  breakevenData.forEach(entry => {
-    profitsByN.set(entry.entryN, entry.breakevenPoolSizes);
-  });
-  
   // Create a line for each of the 21 investors
   for (let investorIndex = 0; investorIndex < NUM_INVESTORS; investorIndex++) {
     const entryN = FIRST_INVESTOR_N + (investorIndex * INVESTOR_ENTRY_INTERVAL);
     const profitData: { n: number; profit: number }[] = [];
     
-    // For each row starting from this investor's entry point
-    profitsByN.forEach((profits, currentN) => {
+    // For each breakeven entry (each row in the CSV)
+    for (const entry of breakevenData) {
+      const currentN = entry.entryN;
+      
+      // Only include data points after this investor entered
       if (currentN >= entryN) {
-        // This investor's profit is at index investorIndex in the profits array
-        const profit = profits[investorIndex];
+        // The investor's profit is at their column index in the array
+        const profit = entry.breakevenPoolSizes[investorIndex];
+        
+        // Add the data point if the profit value exists
         if (profit !== undefined && !isNaN(profit)) {
           profitData.push({
             n: currentN,
@@ -40,8 +39,9 @@ export const parseInvestorProfitLines = (breakevenData: BreakevenEntry[]): Inves
           });
         }
       }
-    });
+    }
     
+    // Add this investor's line if they have any data
     if (profitData.length > 0) {
       investorLines.push({
         entryN,
