@@ -1,12 +1,35 @@
+import { useState, useEffect } from "react";
 import { TrendingUp, Coins, Percent, DollarSign } from "lucide-react";
 import TrendChart from "@/components/charts/TrendChart";
 import ProbabilityChart from "@/components/charts/ProbabilityChart";
 import ContributionChart from "@/components/charts/ContributionChart";
 import BreakevenChart from "@/components/charts/BreakevenChart";
 import StatsCard from "@/components/charts/StatsCard";
-import { mintingData, fullMintingData } from "@/lib/chartData";
+import { getRealData } from "@/lib/parseRealCSV";
+import type { MintData } from "@/lib/chartData";
 
 const Index = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [fullMintingData, setFullMintingData] = useState<MintData[]>([]);
+
+  useEffect(() => {
+    getRealData().then(data => {
+      setFullMintingData(data.mintingData);
+      setIsLoading(false);
+    });
+  }, []);
+
+  if (isLoading || fullMintingData.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading minting data...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Calculate statistics from full dataset
   const lastEntry = fullMintingData[fullMintingData.length - 1];
   const firstEntry = fullMintingData[0];
