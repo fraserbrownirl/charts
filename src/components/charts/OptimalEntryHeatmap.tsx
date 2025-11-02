@@ -111,11 +111,18 @@ export const OptimalEntryHeatmap = () => {
 
     // Sample entry points every 10 mints from N=50 to N=500
     const entryPoints: number[] = [];
-    for (let n = 50; n <= 500; n += 10) {
-      if (data.find(d => d.n === n)) {
-        entryPoints.push(n);
+    const minN = 50;
+    const maxN = Math.min(500, data[data.length - 1]?.n || 500);
+    
+    for (let n = minN; n <= maxN; n += 10) {
+      // Find closest data point if exact match doesn't exist
+      const closestData = data.find(d => d.n >= n);
+      if (closestData && closestData.n <= n + 5) {
+        entryPoints.push(closestData.n);
       }
     }
+    
+    console.log(`Heatmap showing entry points from N=${entryPoints[0]} to N=${entryPoints[entryPoints.length - 1]}`);
 
     // Confidence levels from 50% to 99%
     const confidenceLevels = [0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 0.99];
@@ -135,7 +142,7 @@ export const OptimalEntryHeatmap = () => {
   }, [data]);
 
   // Grid dimensions - optimized for single screen width
-  const cellWidth = 24;
+  const cellWidth = 20;
   const cellHeight = 26;
   const marginLeft = 70;
   const marginTop = 40;
@@ -217,7 +224,7 @@ export const OptimalEntryHeatmap = () => {
 
             {/* X-axis labels (Entry Points) */}
             {entryPoints.map((entryN, i) => (
-              i % 2 === 0 && (
+              i % 3 === 0 && (
                 <text
                   key={`x-${entryN}`}
                   x={getXPosition(entryN) + cellWidth / 2}
