@@ -5,6 +5,12 @@ export interface InvestorProfitLine {
   profitData: { n: number; profit: number }[]; // Profit/loss at each subsequent mint number
 }
 
+export interface BreakevenPoint {
+  entryN: number;
+  breakevenN: number | null;
+  profitableDuration: number | null;
+}
+
 // CSV structure notes:
 // - After the base columns, there are up to 21 investor P/L columns.
 // - At mint number n, only investors who have already entered have a value.
@@ -43,8 +49,46 @@ export const parseInvestorProfitLines = (breakevenData: BreakevenEntry[]): Inves
   return investorLines.sort((a, b) => a.entryN - b.entryN);
 };
 
+// Calculate breakeven points for all investors
+export const calculateBreakevenPoints = (profitLines: InvestorProfitLine[]): BreakevenPoint[] => {
+  return profitLines.map(line => {
+    const { entryN, profitData } = line;
+    
+    // Find where profit crosses from positive to negative
+    for (let i = 0; i < profitData.length - 1; i++) {
+      const current = profitData[i];
+      const next = profitData[i + 1];
+      
+      if (current.profit >= 0 && next.profit < 0) {
+        // Linear interpolation to find precise breakeven point
+        const breakevenN = current.n + 
+          (0 - current.profit) / (next.profit - current.profit) * (next.n - current.n);
+        
+        return {
+          entryN,
+          breakevenN: Math.round(breakevenN * 10) / 10,
+          profitableDuration: Math.round((breakevenN - entryN) * 10) / 10
+        };
+      }
+    }
+    
+    // If never goes negative, return null
+    return {
+      entryN,
+      breakevenN: null,
+      profitableDuration: null
+    };
+  });
+};
+
 // Async function to get investor profit lines
 export const getInvestorProfitLines = async (): Promise<InvestorProfitLine[]> => {
   const data = await getRealData();
   return parseInvestorProfitLines(data.breakevenData);
+};
+
+// Async function to get breakeven points
+export const getBreakevenPoints = async (): Promise<BreakevenPoint[]> => {
+  const profitLines = await getInvestorProfitLines();
+  return calculateBreakevenPoints(profitLines);
 };

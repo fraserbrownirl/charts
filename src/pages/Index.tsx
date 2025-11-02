@@ -5,6 +5,8 @@ import PoolSizeChart from "@/components/charts/PoolSizeChart";
 import ProbabilityChart from "@/components/charts/ProbabilityChart";
 import ContributionChart from "@/components/charts/ContributionChart";
 import BreakevenChart from "@/components/charts/BreakevenChart";
+import BreakevenPointChart from "@/components/charts/BreakevenPointChart";
+import ProfitableDurationChart from "@/components/charts/ProfitableDurationChart";
 import StatsCard from "@/components/charts/StatsCard";
 import { getRealData } from "@/lib/parseRealCSV";
 import type { MintData } from "@/lib/chartData";
@@ -98,6 +100,11 @@ const Index = () => {
 
         <div className="grid grid-cols-1 gap-8 mt-8">
           <BreakevenChart />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+          <BreakevenPointChart />
+          <ProfitableDurationChart />
         </div>
       </main>
 
