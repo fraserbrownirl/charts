@@ -48,11 +48,11 @@ const CapitalRequirementsTable = () => {
               <TableRow>
                 <TableHead className="w-[100px]">Entry N</TableHead>
                 <TableHead className="text-right">Pool Size (ETH)</TableHead>
-                <TableHead className="text-right">Expected Profit</TableHead>
-                <TableHead className="text-right">50% Capital</TableHead>
-                <TableHead className="text-right">90% Capital</TableHead>
-                <TableHead className="text-right">99% Capital</TableHead>
-                <TableHead className="text-right">ROI (90%)</TableHead>
+                <TableHead className="text-right">Expected Profit (ETH)</TableHead>
+                <TableHead className="text-right">50% Capital (ETH)</TableHead>
+                <TableHead className="text-right">90% Capital (ETH)</TableHead>
+                <TableHead className="text-right">99% Capital (ETH)</TableHead>
+                <TableHead className="text-right">ROI @ 90%</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
